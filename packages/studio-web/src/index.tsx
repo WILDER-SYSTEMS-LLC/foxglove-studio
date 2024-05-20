@@ -7,9 +7,6 @@ import ReactDOM from "react-dom";
 
 import Logger from "@foxglove/log";
 import type { IDataSourceFactory } from "@foxglove/studio-base";
-import CssBaseline from "@foxglove/studio-base/components/CssBaseline";
-
-import { canRenderApp } from "./canRenderApp";
 
 const log = Logger.getLogger(__filename);
 
@@ -39,8 +36,6 @@ export async function main(getParams: () => Promise<MainParams> = async () => ({
   if (!rootEl) {
     throw new Error("missing #root element");
   }
-
-  const canRender = canRenderApp();
 
   // Use an async import to delay loading the majority of studio-base code until the CompatibilityBanner
   // can be displayed.
