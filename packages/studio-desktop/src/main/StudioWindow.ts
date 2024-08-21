@@ -21,13 +21,11 @@ import path from "path";
 
 import Logger from "@foxglove/log";
 import { APP_BAR_HEIGHT } from "@foxglove/studio-base/src/components/AppBar/constants";
-import { NativeAppMenuEvent } from "@foxglove/studio-base/src/context/NativeAppMenuContext";
 import { palette } from "@foxglove/theme";
 
 import StudioAppUpdater from "./StudioAppUpdater";
 import getDevModeIcon from "./getDevModeIcon";
 import { simulateUserClick } from "./simulateUserClick";
-import { getTelemetrySettings } from "./telemetry";
 import { encodeRendererArg } from "../common/rendererArgs";
 import { FOXGLOVE_PRODUCT_NAME } from "../common/webpackDefines";
 
@@ -60,7 +58,6 @@ function getTitleBarOverlayOptions(): TitleBarOverlayOptions {
 }
 
 function newStudioWindow(deepLinks: string[] = [], reloadMainWindow: () => void): BrowserWindow {
-  const { crashReportingEnabled, telemetryEnabled } = getTelemetrySettings();
   const preloadPath = path.join(app.getAppPath(), "main", "preload.js");
 
   const macTrafficLightInset =
@@ -84,8 +81,6 @@ function newStudioWindow(deepLinks: string[] = [], reloadMainWindow: () => void)
       preload: preloadPath,
       nodeIntegration: false,
       additionalArguments: [
-        `--allowCrashReporting=${crashReportingEnabled ? "1" : "0"}`,
-        `--allowTelemetry=${telemetryEnabled ? "1" : "0"}`,
         encodeRendererArg("deepLinks", deepLinks),
       ],
       // Disable webSecurity in development so we can make XML-RPC calls, load
@@ -198,10 +193,6 @@ function newStudioWindow(deepLinks: string[] = [], reloadMainWindow: () => void)
   return browserWindow;
 }
 
-function sendNativeAppMenuEvent(event: NativeAppMenuEvent, browserWindow: BrowserWindow) {
-  browserWindow.webContents.send(event);
-}
-
 function buildMenu(browserWindow: BrowserWindow): Menu {
   const menuTemplate: MenuItemConstructorOptions[] = [];
 
@@ -223,7 +214,6 @@ function buildMenu(browserWindow: BrowserWindow): Menu {
           label: t("desktopWindow:settings"),
           accelerator: "CommandOrControl+,",
           click: () => {
-            sendNativeAppMenuEvent("open-help-general", browserWindow);
           },
         },
         { role: "services" },
@@ -256,7 +246,6 @@ function buildMenu(browserWindow: BrowserWindow): Menu {
         label: t("appBar:open"),
         click: async () => {
           await simulateUserClick(browserWindow);
-          sendNativeAppMenuEvent("open", browserWindow);
         },
       },
       {
@@ -264,7 +253,6 @@ function buildMenu(browserWindow: BrowserWindow): Menu {
         label: t("appBar:openLocalFile"),
         click: async () => {
           await simulateUserClick(browserWindow);
-          sendNativeAppMenuEvent("open-file", browserWindow);
         },
       },
       {
@@ -272,7 +260,6 @@ function buildMenu(browserWindow: BrowserWindow): Menu {
         label: t("appBar:openConnection"),
         click: async () => {
           await simulateUserClick(browserWindow);
-          sendNativeAppMenuEvent("open-connection", browserWindow);
         },
       },
       { type: "separator" },
@@ -359,19 +346,16 @@ function buildMenu(browserWindow: BrowserWindow): Menu {
       {
         label: t("appBar:about"),
         click: () => {
-          sendNativeAppMenuEvent("open-help-about", browserWindow);
         },
       },
       {
         label: t("appBar:viewOurDocs"),
         click: () => {
-          sendNativeAppMenuEvent("open-help-docs", browserWindow);
         },
       },
       {
         label: t("appBar:joinOurSlack"),
         click: () => {
-          sendNativeAppMenuEvent("open-help-slack", browserWindow);
         },
       },
       { type: "separator" },
@@ -379,7 +363,6 @@ function buildMenu(browserWindow: BrowserWindow): Menu {
         label: t("appBar:exploreSampleData"),
         click: async () => {
           await simulateUserClick(browserWindow);
-          sendNativeAppMenuEvent("open-demo", browserWindow);
         },
       },
     ],

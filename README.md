@@ -6,26 +6,50 @@ Requirements:
 * node
 * yarn
 
+## Web
 Run live development server, default port 8080.
 
 ```
 yarn run web:serve
 ```
 
-Build production server
+Build production web server
 
 ```
 yarn run web:build:prod
 ```
 
-Run "storybook", default port 9009:
+Run web "storybook", default port 9009:
 ```
 yarn storybook
 ```
 
-## Docker
+## Desktop
 
-The build uses a multi-stage Dockerfile. First it builds the prod node app, then copies app files into caddy container which is used to serve the app. Does not do a good job of caching, so it's fastest to develop with the node/yarn tooling.
+Run development Desktop app:
+
+In one terminal, run
+```
+yarn desktop:serve
+```
+and in another run
+```
+yarn desktop:start
+```
+
+Build production desktop app:
+
+```
+yarn desktop:build:prod
+```
+
+Build the release packages.
+```
+yarn package:linux
+```
+The packages will be available in the dist/ folder. Only linux packages are currently working.
+
+## Docker
 
 Build the container image:
 
@@ -38,7 +62,7 @@ Run the container interactively, with the default layout on default port 8080:
 docker run --rm -it -p 8080:8080 foxglove
 ```
 
-OR Run the container, mounting a custom layout in the current directory, and serving on port 8081
+OR Run the container, mounting a custom layout in the current directory, and serving on port 8081 (This hasn't been tested...)
 ```
 docker run --entrypoint= --rm -it -p 8081:8081 -v $PWD/foxglove-layout.json:/foxglove/default-layout.json /bin/sh -c "caddy file-server --listen :8081"
 ```

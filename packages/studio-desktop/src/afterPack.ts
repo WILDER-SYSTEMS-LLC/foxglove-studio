@@ -4,7 +4,7 @@
 
 import { exec } from "@actions/exec";
 import { downloadTool, extractZip } from "@actions/tool-cache";
-import type MacPackager from "app-builder-lib/out/macPackager";
+//import type MacPackager from "app-builder-lib/out/macPackager";
 import { log, Arch } from "builder-util";
 import crypto from "crypto";
 import { AfterPackContext } from "electron-builder";
@@ -12,14 +12,14 @@ import fs from "fs/promises";
 import path from "path";
 import plist, { PlistObject } from "plist";
 
-async function getKeychainFile(context: AfterPackContext): Promise<string | undefined> {
-  const macPackager = context.packager as MacPackager;
-  if ((macPackager as Partial<typeof macPackager>).codeSigningInfo == undefined) {
-    log.error("No code signing info available.");
-    return;
-  }
-  return (await macPackager.codeSigningInfo.value).keychainFile ?? undefined;
-}
+//async function getKeychainFile(context: AfterPackContext): Promise<string | undefined> {
+//  const macPackager = context.packager as MacPackager;
+//  if ((macPackager as Partial<typeof macPackager>).codeSigningInfo == undefined) {
+//    log.error("No code signing info available.");
+//    return;
+//  }
+//  return (await macPackager.codeSigningInfo.value).keychainFile ?? undefined;
+//}
 
 export default async function afterPack(context: AfterPackContext): Promise<void> {
   await configureQuickLookExtension(context);
@@ -155,10 +155,11 @@ async function configureQuickLookExtension(context: AfterPackContext) {
   // electron-builder's MacPackager creates a temporary keychain to hold the signing info. The
   // certificate is not in the regular system keychain so we have to use the temporary keychain for
   // signing.
-  const keychainFile = await getKeychainFile(context);
-  if (keychainFile != undefined) {
-    await exec("security", ["find-identity", "-v", "-p", "codesigning", keychainFile]);
-  }
+  //const keychainFile = await getKeychainFile(context);
+  const keychainFile = undefined;
+  //if (keychainFile != undefined) {
+  //  await exec("security", ["find-identity", "-v", "-p", "codesigning", keychainFile]);
+  //}
   const signingArgs =
     process.env.CI != undefined && keychainFile != undefined
       ? ["--keychain", keychainFile, "--sign", "Developer ID Application"]
